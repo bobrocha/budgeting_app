@@ -1,7 +1,5 @@
 <template>
-	<div v-show="error_exists" class="error">
-		{{ error_message }}
-	</div>
+	<div v-show="error_exists" class="error" v-html="error_message"></div>
 </template>
 
 <script>

@@ -5,14 +5,17 @@ import Account from './services/Account';
 Vue.use(Vuex);
 
 const initial_state = {
-	toke : sessionStorage.getItem('access_token') || null,
-	user : {},
+	toke    : sessionStorage.getItem('access_token') || null,
+	user    : {},
 }
 
 const store = new Vuex.Store({
 	state : {
-		token : sessionStorage.getItem('access_token') || null,
-		user  : {},
+		token        : sessionStorage.getItem('access_token') || null,
+		user         : {},
+		budgets      : [],
+		expenses     : [],
+		expenseYears : [],
 	},
 	mutations : {
 		setToken(state, token) {
@@ -32,7 +35,45 @@ const store = new Vuex.Store({
 		},
 		setUserName(state, name) {
 			state.user.name = name;
-		}
+		},
+		setBudgets(state, budgets) {
+			state.budgets = budgets;
+		},
+		addBudget(state, budget) {
+			state.budgets.unshift(budget);
+		},
+		removeBudget(state, id) {
+			let index = null;
+
+			for(let i = 0; i < state.budgets.length; i++) {
+				if(state.budgets[i].id === id) {
+					index = i;
+
+					break;
+				}
+			}
+
+			state.budgets.splice(index, 1);
+		},
+		updateBudget(state, budget) {
+			let index = null;
+
+			for(let i = 0; i < state.budgets.length; i++) {
+				if(state.budgets[i].id === budget.id) {
+					index = i;
+
+					break;
+				}
+			}
+
+			state.budgets.splice(index, 1, budget);
+		},
+		setExpenses(state, expenses) {
+			state.expenses = expenses;
+		},
+		setExpenseYears(state, years) {
+			state.expenseYears = years;
+		},
 	},
 	getters : {
 		isAuthenitcated(state) {
