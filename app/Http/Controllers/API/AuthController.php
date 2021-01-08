@@ -28,7 +28,7 @@ class AuthController extends Controller
 				'form_params' => [
 					'grant_type'    => 'password',
 					'client_id'     => '2',
-					'client_secret' => '5O7cgPKzFK0BhjZoUrbxJQDtHeBRRoN39ssWQRl0',
+					'client_secret' => 'MM30A0itVSjGxivJmV4OlzSFh1J00OMq01O1PScY',
 					'username'      => $request->username,
 					'password'      => $request->password,
 					'scope'         => '',
@@ -38,7 +38,7 @@ class AuthController extends Controller
 			return json_decode((string) $response->getBody(), true);
 
 		} catch (ClientException $e) {
-			if($e->getCode() === 400) {
+			if($e->getCode() === 400 || $e->getCode() === 401) {
 				return response()->json([
 					'code'    => $e->getCode(),
 					'message' => 'Invalid Request. Please enter in correct email and password.',

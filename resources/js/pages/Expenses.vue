@@ -1,7 +1,12 @@
 <template>
-	<p>I am expenses</p>
+	<expenses-card></expenses-card>
 </template>
+<script>
+import ExpensesCard from '../components/Expenses/ExpensesCard';
 
-<style>
-
-</style>
+export default {
+	components : {
+		ExpensesCard,
+	}
+}
+</script>

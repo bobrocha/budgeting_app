@@ -6,6 +6,7 @@
 <style>
 
 .spinner-wrapper {
+	margin-top: 1rem;
 	text-align: center;
 }
 
