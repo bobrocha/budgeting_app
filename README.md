@@ -7,7 +7,7 @@ Architectual features/implementations this app uses
 Backend
 * Laravel MVC framework
 * MySql
-* REST API implementation using Laravel Passport
+* CRUD REST API implementation using Laravel Passport
 
 Frontend
 * Vue Router
