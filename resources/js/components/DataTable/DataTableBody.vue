@@ -26,7 +26,6 @@ export default {
 		//
 	},
 	watch : {
-
 		/**
 		 * Watch for rows to change and updated what is displayed on page,
 		 * this can be affected by filtering
