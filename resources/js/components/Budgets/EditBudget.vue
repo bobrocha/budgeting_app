@@ -105,7 +105,6 @@ export default {
 	},
 }
 </script>
-
 <style>
 .edit-budget-content {
 	display: flex;
