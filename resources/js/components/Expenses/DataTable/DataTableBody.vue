@@ -1,44 +1,24 @@
 <template>
 	<tbody>
-		<tr
+		<data-table-row
 			v-for="(row, i) in rows"
 			:key="i"
-		>
-			<td
-				v-for="(field, i) in row.fields"
-				:key="i"
-			>{{ field }}</td>
-			<td class="row-controls">
-				<i @click="editRow(row)" class="fas fa-edit" title="Edit"></i>
-				<i  @click="deleteRow(row)" class="fas fa-trash-alt" title="Delete"></i>
-			</td>
-		</tr>
+			:row="row"
+			@editRow="$emit('editRow', $event)"
+			@deleteRow="$emit('deleteRow', $event)"
+		></data-table-row>
 	</tbody>
 </template>
 
 <script>
+import DataTableRow from '@/components/Expenses/DataTable/DataTableRow';
+
 export default {
+	components : {
+		DataTableRow,
+	},
 	props : {
 		rows : Array,
 	},
-	data() {
-		return {}
-	},
-	methods : {
-		editRow(row) {
-			this.$emit('editRow', {...row});
-		},
-		deleteRow(row) {
-			this.$emit('deleteRow', row.attributes.transactionID);
-		},
-	},
-	computed : {},
-	watch : {},
 }
 </script>
-
-<style>
-.data-table tbody .row-controls i {
-	cursor: pointer;
-}
-</style>

@@ -18,4 +18,12 @@ mix.js('resources/js/app.js', 'public/js')
 	.copy('node_modules/@fortawesome/fontawesome-free/webfonts/', 'public/webfonts')
 	.browserSync({
 		proxy : 'localhost/budgeting_app',
+	})
+	.webpackConfig({
+		resolve: {
+			alias: {
+				'@' : path.resolve(__dirname, 'resources/js'),
+			}
+		}
 	});
+

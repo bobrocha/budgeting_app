@@ -34,10 +34,10 @@
 </template>
 
 <script>
-import Panel         from './Panel';
-import RegularButton from './RegularButton';
-import Spinner       from '../components/Spinner';
-import Error         from '../components/Error';
+import Panel         from '@/components/Panel';
+import RegularButton from '@/components/RegularButton';
+import Spinner       from '@/components/Spinner';
+import Error         from '@/components/Error';
 
 export default {
 	components : {
@@ -46,11 +46,13 @@ export default {
 		Spinner,
 		Error,
 	},
+
 	props : {
 		name    : String,
 		email   : String,
 		user_id : Number,
 	},
+
 	data() {
 		return {
 			toggled             : false,
@@ -63,6 +65,7 @@ export default {
 			error_exists        : false,
 		}
 	},
+
 	methods: {
 		cancelEdit() {
 			this.toggled             = false;
@@ -71,10 +74,12 @@ export default {
 			this.error_exists        = false;
 			this.initialized_request = false;
 		},
+
 		edit() {
 			this.toggled  = true;
 			this.new_name = this.name;
 		},
+
 		save() {
 			this.error_message = '';
 			this.error_exists  = false;

@@ -1,41 +1,54 @@
 <template>
 	<panel class="expenses-card">
 		<template v-slot:body>
-			<div class="expense-controls">
-				<select  class="expense-month-select" v-model="selectedMonth">
-					<option
-						v-for="(month, i) in months"
-						:key="i"
-						:value="month"
-					>{{ month }}</option>
-				</select>
-				<select  class="expense-year-select" v-model="selectedYear">
-					<option
-						v-for="(year, i) in expenseYears"
-						:key="i"
-						:value="year"
-					>{{ year }}</option>
-				</select>
-			</div>
+			<edit-expense-modal
+				v-if="isEditingExpense"
+				:isModalVisible="isEditingExpense"
+				@closeModal="isEditingExpense = false"
+				:rowData="editingRowData"
+				@rowUpdated="rowUpdated"
+			></edit-expense-modal>
+			<add-expense-modal
+				v-if="isAddingExpense"
+				:isModalVisible="isAddingExpense"
+				@closeModal="isAddingExpense = false"
+			></add-expense-modal>
+			<expenses-controls
+				:months="months"
+				:years="expenseYears"
+				:selectedMonth="selectedMonth"
+				:selectedYear="selectedYear"
+				@handleFilterRowToggle="filterRowToggle = !filterRowToggle"
+				@monthSelected="handleMonthSelect"
+				@yearSelected="handleYearSelect"
+				@addExpense="isAddingExpense = true"
+			></expenses-controls>
 			<hr>
-			<spinner v-show="initalizeRequest"></spinner>
+			<spinner v-show="initializedRequest"></spinner>
 			<data-table
 				:fields="fields"
-				:rows="displayedRows"
+				:rows="rows"
+				:pageSize="3"
+				:filterRowToggle="filterRowToggle"
+				@editRow="handleEditRow"
+				@deleteRow="handleDeleteRow"
 			></data-table>
 		</template>
 	</panel>
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
-import Expenses                   from '../../services/Expenses';
-import Panel                      from '../Panel';
-import moment                     from 'moment';
-import Spinner                    from '../Spinner';
-import DataTable                  from './DataTable/DataTable';
+import { mapState, mapActions } from 'vuex';
+import Panel                    from '@/components/Panel';
+import moment                   from 'moment';
+import Spinner                  from '@/components/Spinner';
+import DataTable                from '@/components/Expenses/DataTable/Datatable';
+import ExpensesControls         from '@/components/Expenses/ExpensesControls';
+import EditExpenseModal         from '@/components/Expenses/EditExpenseModal';
+import AddExpenseModal          from '@/components/Expenses/AddExpenseModal';
 
-const now   = moment();
+
+const now    = moment();
 const months = [
 	'January',
 	'February',
@@ -75,83 +88,91 @@ export default {
 		Panel,
 		Spinner,
 		DataTable,
+		ExpensesControls,
+		EditExpenseModal,
+		AddExpenseModal,
 	},
+
 	data() {
 		return {
 			months           : months,
-			expensesService  : {},
-			currentMonth     : now.format('MMMM'),
-			currentYear      : now.format('YYYY'),
-			selectedYear     : null,
-			selectedMonth    : null,
-			initalizeRequest : false,
+			selectedYear     : +now.format('YYYY'),
+			selectedMonth    : now.format('MMMM'),
 			fields           : fields,
-			displayedRows    : [],
-
+			filterRowToggle  : false,
+			rows             : [],
+			isEditingExpense : false,
+			editingRowData   : {},
+			isAddingExpense  : false,
 		}
 	},
+
 	created() {
-		this.expensesService = new Expenses(this.token);
-		this.selectedYear    = this.currentYear;
-		this.selectedMonth   = this.currentMonth;
-
-		this.getYears();
+		this.init();
 	},
+
 	methods : {
-		...mapMutations(['setExpenses', 'setExpenseYears']),
-		getYears() {
-			if(this.expenseYears.length) {
-				return;
-			};
-			this.initalizeRequest = true;
+		...mapActions({
+			initStore     : 'expensesStore/initStore',
+			getExpenses   : 'expensesStore/getExpenses',
+			deleteExpense : 'expensesStore/deleteExpense',
+		}),
 
-			this.expensesService.years()
-				.then(response => this.setExpenseYears(response))
-				.catch(console.log)
-				.finally(() => this.initalizeRequest = false);
+		init() {
+			this.initStore(this.selectedYear).then(() => {
+				this.handleMonthSelect(this.selectedMonth)
+			});
 		},
-		async getExpenses() {
-			await this.expensesService
-				.get(this.selectedYear)
-				.then(response => this.setExpenses(response));
+
+		rowUpdated(data) {
+			const id    = data.attributes.transactionID;
+			const index = this.rows.findIndex(({ attributes }) => attributes.transactionID === id);
+
+			this.rows.splice(index, 1, data);
 		},
-		getExpensesForSelectedMonth() {
-			return this.expenses.filter(({ fields }) => {
-				return moment(fields.date, 'MM/DD/YYYY').format('MMMM') === this.selectedMonth;
+
+		handleDeleteRow(data) {
+			const id = data.attributes.transactionID;
+
+			this.deleteExpense(id).then(() => {
+				const index = this.rows.findIndex(({ attributes }) => attributes.transactionID === id);
+
+				this.rows.splice(index, 1);
+			});
+		},
+
+		handleEditRow(data) {
+			this.editingRowData   = data;
+			this.isEditingExpense = true;
+		},
+
+		handleMonthSelect(month) {
+			this.selectedMonth = month;
+
+			const filtered = this.expenses.filter(({ fields }) => {
+				return month === moment(fields.date, 'MM/DD/YYYY').format('MMMM');
+			});
+
+			this.rows = filtered;
+		},
+
+
+		handleYearSelect(year) {
+			this.selectedYear = +year;
+
+			this.getExpenses(year).then(() => {
+				this.handleMonthSelect(this.selectedMonth);
 			});
 		},
 	},
+
 	computed : {
-		...mapState(['token', 'expenses', 'expenseYears']),
-	},
-	watch : {
-		selectedYear() {
-			this.initalizeRequest = true;
-
-			this.getExpenses().then(() => {
-				this.displayedRows = this.getExpensesForSelectedMonth();
-			})
-			.catch(console.log)
-			.finally(() => {
-				this.initalizeRequest = false;
-			});
-		},
-		selectedMonth() {
-			if(this.expenses.length) {
-				this.displayedRows = this.getExpensesForSelectedMonth();
-			}
-		}
+		...mapState({
+			token              : state => state.token,
+			expenses           : state => state.expensesStore.expenses,
+			expenseYears       : state => state.expensesStore.expenseYears,
+			initializedRequest : state => state.expensesStore.initializedRequest,
+		}),
 	},
 }
 </script>
-
-<style>
-.expense-controls {
-	display: flex;
-	justify-content: space-between;
-}
-
-.expenses-card select {
-	padding: 0.25rem;
-}
-</style>

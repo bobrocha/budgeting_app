@@ -35,7 +35,7 @@
 				></error>
 				<success
 					:successMessage="successMessage"
-					:isSucessful="isSucessful"
+					:isSuccesful="isSuccesful"
 				></success>
 				<spinner v-show="initializdRequest"></spinner>
 			</div>
@@ -48,11 +48,11 @@
 </template>
 
 <script>
-import Modal                      from '../Modal';
-import Spinner                    from '../Spinner';
-import Error                      from '../Error';
-import Success                    from '../Success';
-import Budgets                    from '../../services/Budgets';
+import Modal                      from '@/components/Modal';
+import Spinner                    from '@/components/Spinner';
+import Error                      from '@/components/Error';
+import Success                    from '@/components/Success';
+import Budgets                    from '@/services/Budgets';
 import moment                     from 'moment';
 import { mapState, mapMutations } from 'vuex';
 
@@ -61,12 +61,14 @@ export default {
 		categories    : Array,
 		selectedMonth : String,
 	},
+
 	components : {
 		Modal,
 		Spinner,
 		Error,
 		Success,
 	},
+
 	data() {
 		return {
 			modalTitle        : 'Create Budget',
@@ -75,14 +77,16 @@ export default {
 			errorExists       : false,
 			errorMessage      : '',
 			successMessage    : '',
-			isSucessful       : false,
+			isSuccesful       : false,
 			budgetsService    : {},
 			initializdRequest : false,
 		}
 	},
+
 	created() {
 		this.budgetsService = new Budgets(this.token);
 	},
+
 	methods: {
 		...mapMutations(['addBudget']),
 		closeModal() {
@@ -90,12 +94,14 @@ export default {
 			this.modalValues    = {};
 			this.errorMessage   = '';
 			this.errorExists    = false;
-			this.isSucessful    = false;
+			this.isSuccesful    = false;
 			this.successMessage = '';
 		},
+
 		showModal() {
 			this.isModalVisible = true;
 		},
+
 		save() {
 			this.validateModalValues();
 
@@ -103,6 +109,7 @@ export default {
 				this.createBudget(this.modalValues);
 			}
 		},
+
 		validateModalValues() {
 			const requiredFields = ['category', 'amount'];
 			const missingFields  = [];
@@ -125,11 +132,12 @@ export default {
 
 			// If there is missing fields, build error message
 			if(missingFields.length) {
-				this.errorMessage = missingFields.map(field => `The field <b>${field}</b> is required.`).join(`<br>`);
+				this.errorMessage = missingFields.map(field => `The field <b>${field}</b> is required.`).join('<br>');
 			}
 
 			this.errorExists = !!missingFields.length;
 		},
+
 		createBudget(data) {
 			const startDate        = moment(this.selectedMonth, 'MMMM').startOf('month').format('YYYY-MM-DD');
 			const endDate          = moment(this.selectedMonth, 'MMMM').endOf('month').format('YYYY-MM-DD');
@@ -138,13 +146,13 @@ export default {
 			this.initializdRequest = true;
 
 			this.budgetsService.create(request).then(response => {
-				this.isSucessful    = true;
+				this.isSuccesful    = true;
 				this.successMessage = 'Budget was added succesfully';
 				response.title      = this.categories.find(({ id }) => id === response.category).title;;
 
 				this.addBudget(response);
 				setTimeout(() =>  {
-					this.isSucessful    = false;
+					this.isSuccesful    = false;
 					this.successMessage = '';
 				}, 500);
 			})
@@ -157,6 +165,7 @@ export default {
 			});
 		}
 	},
+
 	computed : {
 		...mapState(['token', 'budgets']),
 	},

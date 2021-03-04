@@ -7,19 +7,21 @@
 	</div>
 </template>
 <script>
-import Navigation   from '../components/Navigation';
-import MainContent  from '../components/MainContent';
+import Navigation   from '@/components/Navigation';
+import MainContent  from '@/components/MainContent';
 import { mapState } from 'vuex';
-import API          from '../api';
+import API          from '@/api';
 
 export default {
 	components : {
 		Navigation,
 		MainContent,
 	},
+
 	mounted() {
 		this.$store.dispatch('getUser');
 	},
+
 	computed : {
 		...mapState(['user']),
 	},

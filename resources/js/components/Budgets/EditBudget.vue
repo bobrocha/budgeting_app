@@ -23,7 +23,7 @@
 					</div>
 					<success
 						:successMessage="successMessage"
-						:isSucessful="isSucessful"
+						:isSuccessful="isSuccessful"
 					></success>
 					<spinner v-show="initializdRequest"></spinner>
 				</div>
@@ -33,11 +33,10 @@
 </template>
 
 <script>
-import Modal            from '../Modal';
-import Spinner          from '../Spinner';
-import Error            from '../Error';
-import Success          from '../Success';
-import Budgets          from '../../services/Budgets';
+import Modal            from '@/components/Modal';
+import Spinner          from '@/components/Spinner';
+import Error            from '@/components/Error';
+import Success          from '@/components/Success';
 import { mapMutations } from 'vuex';
 
 export default {
@@ -53,20 +52,24 @@ export default {
 		Error,
 		Success,
 	},
+
 	data() {
 		return {
 			isModalVisible    : false,
 			amountModel       : this.amount,
 			initializdRequest : false,
 			successMessage    : '',
-			isSucessful       : false,
+			isSuccessful       : false,
 		}
 	},
+
 	methods : {
 		...mapMutations(['updateBudget']),
+
 		closeModal() {
 			this.$emit('editBudget', {}, false);
 		},
+
 		save() {
 			if(this.amountModel) {
 				this.initializdRequest = true;
@@ -79,11 +82,11 @@ export default {
 
 					this.updateBudget(budgetObject);
 
-					this.isSucessful    = true;
+					this.isSuccessful    = true;
 					this.successMessage = 'Budget was succesfully updated';
 
 					setTimeout(() =>  {
-						this.isSucessful    = false;
+						this.isSuccessful    = false;
 						this.successMessage = '';
 						this.closeModal();
 					}, 750);
@@ -95,10 +98,12 @@ export default {
 			}
 		},
 	},
+
 	watch : {
 		isEditing(val) {
 			this.isModalVisible = val;
 		},
+
 		amount(val) {
 			this.amountModel = val;
 		}

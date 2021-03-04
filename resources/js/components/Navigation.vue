@@ -22,11 +22,13 @@ export default {
 			default : '',
 		},
 	},
+
 	data() {
 		return {
 			hamburger_menu : true,
 		}
 	},
+
 	methods : {
 		logout() {
 			this.$store.commit('unsetToken');
