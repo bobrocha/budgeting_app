@@ -20,10 +20,6 @@
 </template>
 
 <script>
-import Budgets      from '../../services/Budgets';
-import moment       from 'moment';
-import { mapState } from 'vuex';
-
 export default {
 	props : {
 		budgets : {
@@ -35,15 +31,12 @@ export default {
 			}],
 		},
 	},
-	data() {
-		return {
-			//
-		}
-	},
+
 	methods : {
 		destroy(id) {
 			this.$emit('deleteBudget', id);
 		},
+
 		edit(budget) {
 			this.$emit('editBudget', budget, true);
 		},

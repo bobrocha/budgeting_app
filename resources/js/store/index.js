@@ -1,6 +1,7 @@
-import Vue     from 'vue';
-import Vuex    from 'vuex';
-import Account from './services/Account';
+import Vue           from 'vue';
+import Vuex          from 'vuex';
+import Account       from '@/services/Account';
+import expensesStore from '@/store/modules/Expenses';
 
 Vue.use(Vuex);
 
@@ -10,12 +11,13 @@ const initial_state = {
 }
 
 const store = new Vuex.Store({
+	modules : {
+		expensesStore,
+	},
 	state : {
 		token        : sessionStorage.getItem('access_token') || null,
 		user         : {},
 		budgets      : [],
-		expenses     : [],
-		expenseYears : [],
 	},
 	mutations : {
 		setToken(state, token) {
@@ -67,12 +69,6 @@ const store = new Vuex.Store({
 			}
 
 			state.budgets.splice(index, 1, budget);
-		},
-		setExpenses(state, expenses) {
-			state.expenses = expenses;
-		},
-		setExpenseYears(state, years) {
-			state.expenseYears = years;
 		},
 	},
 	getters : {

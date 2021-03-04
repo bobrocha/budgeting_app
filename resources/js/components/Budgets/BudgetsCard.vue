@@ -57,15 +57,15 @@
 </template>
 
 <script>
-import Panel                      from '../Panel';
-import Spinner                    from '../Spinner';
-import CreateBudget               from './CreateBudget';
-import EditBudget                 from './EditBudget';
+import Panel                      from '@/components/Panel';
+import Spinner                    from '@/components/Spinner';
+import CreateBudget               from '@/components/Budgets/CreateBudget';
+import EditBudget                 from '@/components/Budgets/EditBudget';
 import moment                     from 'moment';
 import { mapState, mapMutations } from 'vuex';
-import BudgetCategories           from '../../services/BudgetCategories';
-import BudgetsList                from './BudgetsList';
-import Budgets                    from '../../services/Budgets';
+import BudgetCategories           from '@/services/BudgetCategories';
+import BudgetsList                from '@/components/Budgets/BudgetsList';
+import Budgets                    from '@/services/Budgets';
 
 const months = [
 	'January',
@@ -131,10 +131,11 @@ export default {
 				return;
 			}
 
-			this.initializedRequest = true;
-			this.budgetsService     = new Budgets(this.token);
+			this.initializedRequest      = true;
+			this.budgetsService          = new Budgets(this.token);
+			this.budgetCategoriesService = new BudgetCategories(this.token);
 
-			BudgetCategories.get(this.token).then(response => this.categories = response);
+			this.budgetCategoriesService.get().then(response => this.categories = response);
 			this.budgetsService.get().then(response => {
 				this.setBudgets(response);
 			})

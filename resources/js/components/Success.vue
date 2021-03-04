@@ -1,5 +1,5 @@
 <template>
-	<div v-show="isSucessful" class="success" v-html="successMessage"></div>
+	<div v-show="isSuccessful" class="success" v-html="successMessage"></div>
 </template>
 <script>
 export default {
@@ -8,7 +8,7 @@ export default {
 			type    : String,
 			default : '',
 		},
-			isSucessful : {
+			isSuccessful : {
 				type    : Boolean,
 				default : false,
 		},

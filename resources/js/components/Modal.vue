@@ -19,6 +19,7 @@ export default {
 		title   : String,
 		visible : Boolean,
 	},
+
 	methods : {
 		close() {
 			this.$emit('closeModal');
@@ -62,7 +63,7 @@ export default {
 .modal-header {
 	display: flex;
 	border-bottom: 1px solid #ced4da;
-	padding: 1rem;
+	padding: 0.5rem 1rem;
 }
 
 .modal-header h3 {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Transaction;
+use App\Models\BudgetCategories;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +30,7 @@ class ExpensesController extends Controller
 		foreach($results as $result) {
 			array_push($years, $result->year);
 		}
+
 		return response()->json($years);
 	}
 	/**
@@ -67,6 +69,9 @@ class ExpensesController extends Controller
 			WHERE
 				t.year    = :year AND
 				t.user_id = :user_id
+			ORDER BY
+				date
+			DESC
 		';
 
 		$rows = DB::select($query, [
@@ -146,7 +151,20 @@ class ExpensesController extends Controller
 		$transaction->save();
 		$transaction->reFresh();
 
-		return response()->json($transaction);
+		$result = [
+			'fields'     => [
+				'transactionID' => $transaction->id,
+				'categoryID'    => $transaction->category_id,
+			],
+			'attributes' => [
+				'amount'      => $transaction->amount,
+				'category'    => BudgetCategories::find($transaction->category_id)->title,
+				'date'        => $transaction->date,
+				'description' => $transaction->description,
+			],
+		];
+
+		return response()->json($result);
 	}
 
 	/**

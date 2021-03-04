@@ -1,20 +1,19 @@
 import Request from './Request';
 
 class BudgetCategories {
-	constructor() {
+	constructor(accessToken) {
 		this.request  = new Request;
 		this.BASE_URL = this.request.buildUrl('/budget_categories');
-	}
-
-	async get(accessToken) {
-		const headers = {
+		this.headers  = {
 			Authorization  : `Bearer ${accessToken}`,
 			'Content-Type' : 'application/json',
 			'Accept'       : 'application/json',
 		};
+	}
 
-		return await this.request.get(this.BASE_URL, headers);
+	async get() {
+		return await this.request.get(this.BASE_URL, this.headers);
 	}
 }
 
-export default new BudgetCategories;
+export default BudgetCategories;
